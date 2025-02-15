@@ -1,0 +1,32 @@
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto
+    container_name: mqtt-broker
+    restart: always
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto_config:/mosquitto/config
+
+  messaging-service:
+    user: root
+    build: ./messaging_service
+    container_name: messaging-service
+    restart: always
+    depends_on:
+      - mqtt-broker
+    volumes:
+      - ./messaging_service/.gammurc:/root/.gammurc
+      - ./messaging_service/.gammurc:/etc/gammu-smsdrc
+    devices:
+      - "/dev/serial0:/dev/serial0"
+    privileged: true  
+
+  calendar-service:
+    build: ./calendar_service
+    container_name: calendar-service
+    restart: always
+    depends_on:
+      - mqtt-broker
+      - messaging-service

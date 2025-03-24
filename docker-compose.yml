@@ -22,11 +22,3 @@ services:
     devices:
       - "/dev/serial0:/dev/serial0"
     privileged: true  
-
-  calendar-service:
-    build: ./calendar_service
-    container_name: calendar-service
-    restart: always
-    depends_on:
-      - mqtt-broker
-      - messaging-service
